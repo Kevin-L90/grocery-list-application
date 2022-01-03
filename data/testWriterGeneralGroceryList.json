@@ -1,0 +1,12 @@
+{
+  "groceries": [
+    {
+      "quantity": 1,
+      "name": "1"
+    },
+    {
+      "quantity": 2,
+      "name": "2"
+    }
+  ]
+}
