@@ -10,12 +10,12 @@ import persistence.JsonWriter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 // Represents Grocery List Application
 public class App extends JFrame {
-    private static final String JSON_STORE = "./data/SavedLists/GroceryList.json";
     private final int width = 800;
     private final int height = 1200;
     private final TitleBar title;
@@ -28,6 +28,7 @@ public class App extends JFrame {
     private GroceryList groceryList;
     private JsonReader jsonReader;
     private JsonWriter jsonWriter;
+    private String date;
 
     public App() {
         super("Grocery List");
@@ -35,8 +36,11 @@ public class App extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         groceryList = new GroceryList();
+        long millis = System.currentTimeMillis();
+        java.sql.Date date = new java.sql.Date(millis);
+        this.date = date.toString();
 
-        title = new TitleBar("Grocery List", width);
+        title = new TitleBar(this.date, width);
         model = new DefaultListModel<>();
         display = new JList<>(model);
         btnPanel = new ButtonPanel(width);
@@ -200,7 +204,7 @@ public class App extends JFrame {
         save.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                jsonWriter = new JsonWriter(JSON_STORE);
+                jsonWriter = new JsonWriter("./data/SavedLists/" + date + ".json");
                 try {
                     jsonWriter.open();
                     jsonWriter.write(groceryList);
@@ -219,15 +223,24 @@ public class App extends JFrame {
         load.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                jsonReader = new JsonReader(JSON_STORE);
-                try {
-                    groceryList = jsonReader.read();
-                } catch (IOException n) {
-                    System.out.println("Unable to read or no file to read.");
-                }
-                refresh();
+                File folder = new File("data/SavedLists");
+                File[] listOfFiles = folder.listFiles();
+                JFrame savedLists = new JFrame("Load");
+                savedLists.setSize(width / 2, height / 2);
+                savedLists.setVisible(true);
+                savedLists.setResizable(false);
             }
         });
+    }
+
+    private void load(File file) {
+        jsonReader = new JsonReader("./data/SavedLists/" + date + ".json");
+        try {
+            groceryList = jsonReader.read();
+        } catch (IOException n) {
+            System.out.println("Unable to read or no file to read.");
+        }
+        refresh();
     }
 
     // EFFECTS: refreshes display to show contents of groceryList
