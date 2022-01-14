@@ -9,7 +9,7 @@ public class TitleBar extends JPanel {
         setPreferredSize(new Dimension(width, 100));
 
         JLabel titleText = new JLabel(title);
-        titleText.setFont(new Font("Sans-serif", Font.BOLD, 30));
+        titleText.setFont(new Font("Sans-serif", Font.BOLD, 60));
         titleText.setHorizontalAlignment(JLabel.CENTER);
 
         add(titleText);

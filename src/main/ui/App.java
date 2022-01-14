@@ -80,8 +80,8 @@ public class App extends JFrame {
                 JList list = (JList) e.getSource();
                 int index = list.locationToIndex(e.getPoint());
                 if (index >= 0) {
-                    Object g = list.getModel().getElementAt(index);
-                    convertToGrocery(g);
+                    Object o = list.getModel().getElementAt(index);
+                    convertToGrocery(o);
                 }
             }
         };
@@ -216,24 +216,49 @@ public class App extends JFrame {
         });
     }
 
-    // MODIFIES: this
-    // EFFECTS: loads saved Grocery list
-    // Will catch IOException
+    // EFFECTS: opens JFrame with all saved lists
     private void addLoadListener() {
         load.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                File folder = new File("data/SavedLists");
-                File[] listOfFiles = folder.listFiles();
-                JFrame savedLists = new JFrame("Load");
-                savedLists.setSize(width / 2, height / 2);
-                savedLists.setVisible(true);
-                savedLists.setResizable(false);
+                loadFiles();
             }
         });
     }
 
-    private void load(File file) {
+    private void loadFiles() {
+        JFrame savedLists = new JFrame("Load");
+        savedLists.setSize(width, height / 2);
+
+        File folder = new File("data/SavedLists");
+        File[] listOfFiles = folder.listFiles();
+        DefaultListModel<String> saved = new DefaultListModel<>();
+        for (File file: listOfFiles) {
+            saved.addElement(file.getName().replace(".json",""));
+        }
+        JList<String> load = new JList<>(saved);
+        load.setFont(new Font("Sans-serif", Font.PLAIN, 30));
+
+        MouseListener mouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JList list = (JList) e.getSource();
+                int index = list.locationToIndex(e.getPoint());
+                if (index >= 0) {
+                    Object o = list.getModel().getElementAt(index);
+                    load(o.toString());
+                    savedLists.dispose();
+                }
+            }
+        };
+        load.addMouseListener(mouseListener);
+        savedLists.add(load);
+        savedLists.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        savedLists.setVisible(true);
+        savedLists.setResizable(false);
+    }
+
+    private void load(String date) {
         jsonReader = new JsonReader("./data/SavedLists/" + date + ".json");
         try {
             groceryList = jsonReader.read();
