@@ -24,6 +24,7 @@ and the TA I asked did not know either. The bug is sometimes not reproducible. T
 input if the bug occurs.
 
 # Phase 4: Task 2
+Below is an example of how the Event logging will print the log to console.
 
 Fri Nov 26 14:42:04 PST 2021 Added 1 Potato to Grocery List
 
